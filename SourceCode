@@ -1,0 +1,80 @@
+Dim Score = 1  //每日首次登录积1分
+
+/*
+ 浏览文章
+*/
+Sub view()
+	Dim Time_now = Time()
+	Dim Time_enter = Time()
+	Dim Time_interval = 0
+	Dim Total_Time = 330
+	
+	Score = Score + 1  //每阅读一篇文章积1分,活跃时段2分,每日最高可获6积分
+	
+    For 5  //每篇文章滑一滑
+		Swipe 500, 1500, 500, 1000
+        Delay 2000
+	Next
+	
+	Time_interval =  Total_Time - (Time() - Time_enter)
+	While Time_interval > 0  //阅读文章每累计满4分钟积1分,活跃时段2分，每日最高可获8积分
+		ShowMessage "离满"&Total_Time&"s还差["&Time_interval&"]s"
+		Delay 10000
+		Time_now = Time()
+		Time_interval =  Total_Time - (Time_now - Time_enter)
+	Wend
+	Score = Score + 1
+	
+	ShowMessage "今日你已获得["&Score&"]分"
+	KeyPress "Back"
+End Sub
+
+
+/*
+ 【阅读文章】 
+*/
+Sub article()
+	Dim X_BASE = 500
+	Dim Y_BASE = 550
+	Dim cnt = 0
+	
+	
+	
+	Tap 322, 1706                //移到“关注”栏目  
+	Delay 1000                   //等一会儿
+	
+	For 6                        //6篇文章
+		Dim Y_GAP = 760 //本文下边界
+		//变量intX, intY需要预先定义。如果您还没有定义该变量，请取消下面一行的注释
+		Dim intX, intY
+		FindColor 1000, 330, 1001, 1650, "F5F3F2", 0, 1, intX, intY
+		//如果没有找到，intX和intY的值都会被置为-1
+		If intX > -1 And intY > -1 Then 
+			Y_GAP = intY
+//			TracePrint intY
+//			TracePrint Y_GAP-350
+		End If
+		
+    	Tap X_BASE, Y_BASE       //点文章
+    	ShowMessage "进入本回合第["&cnt+1&"]篇文章"
+    	cnt = cnt + 1
+    	Delay 1000               //等一会儿
+    	Call view()              //调用浏览文章子程序
+    	Delay 1000               //等一会儿
+    	
+    	TouchDown 500, 1500      //上滑一篇文章
+		TouchMove 500, 1500 - (Y_GAP-350) - 20
+		Delay 1000               //等一会儿
+    Next
+End Sub
+
+
+
+
+
+
+Dialog.MsgBox("Copyright by sxf",4)
+
+KeepScreen True  //屏幕常亮
+Call article()
+
